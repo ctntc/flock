@@ -13,3 +13,4 @@ bin/
 # Ignore developer-specific files
 .env
 migrations/
+*.db
