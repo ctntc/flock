@@ -7,10 +7,14 @@ public class SessionConfig {
     @Nullable
     private static String migrationsDir = null;
     @NonNull
-    private static String databaseUrl = null;
+    private static String databaseUrl;
+
+    static {
+        databaseUrl = "";
+    }
 
     public static void setMigrationsDir(@Nullable String dir) {
-        if (dir != null && dir.isBlank() == false)
+        if (dir != null && !dir.isBlank())
             migrationsDir = dir;
     }
 
@@ -23,7 +27,7 @@ public class SessionConfig {
     }
 
     public static void setDatabaseUrl(@NonNull String url) {
-        assert url.isBlank() == false;
+        assert !url.isBlank();
         databaseUrl = url;
     }
 }

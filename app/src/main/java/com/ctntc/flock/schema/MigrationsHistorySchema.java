@@ -10,13 +10,14 @@ public final class MigrationsHistorySchema {
                 "migration_id" TEXT NOT NULL CONSTRAINT "PK_migrations_history" PRIMARY KEY,
                 "flock_version" TEXT NOT NULL
             );
-                        """;
+                       \s""";
 
     public static void initialize(@NonNull Connection connection) {
         try (var statement = connection.createStatement()) {
             statement.execute(SCHEMA);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
+            System.exit(1);
         }
     }
 

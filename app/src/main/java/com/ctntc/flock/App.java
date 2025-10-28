@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import org.jspecify.annotations.Nullable;
 
 import com.ctntc.flock.action.FlockNew;
+import com.ctntc.flock.action.FlockRollback;
 import com.ctntc.flock.action.FlockUp;
 
 import io.github.cdimascio.dotenv.Dotenv;
@@ -24,14 +25,15 @@ public class App implements Runnable {
     @Nullable
     public static Connection connection = null;
 
-    @Option(names = { "-d", "--database-url" }, description = "The database connection URL.")
+    @Option(names = {"-d", "--database-url"}, description = "The database connection URL.")
     @Nullable
-    private static URL databaseUrl = null;
+    private static final URL databaseUrl = null;
 
     public static void main(String[] args) {
         var commandLine = new CommandLine(new App())
                 .addSubcommand("new", new FlockNew())
-                .addSubcommand("up", new FlockUp());
+                .addSubcommand("up", new FlockUp())
+                .addSubcommand("rollback", new FlockRollback());
 
         connect(databaseUrl);
 
@@ -50,7 +52,7 @@ public class App implements Runnable {
             SessionConfig.setMigrationsDir(dotenv.get("FLOCK_MIGRATIONS_DIR"));
         }
 
-        if (SessionConfig.getDatabaseUrl() == null || SessionConfig.getDatabaseUrl().isBlank()) {
+        if (SessionConfig.getDatabaseUrl().isBlank()) {
             LOGGER.severe("Database URL is not provided. Please set the DATABASE_URL environment variable.");
             System.exit(1);
         }

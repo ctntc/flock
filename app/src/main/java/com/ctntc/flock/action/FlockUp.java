@@ -16,6 +16,8 @@ import picocli.CommandLine.Command;
 public class FlockUp implements Runnable {
     @Override
     public void run() {
+        assert App.connection != null;
+
         System.out.println("Running up migrations...");
 
         MigrationsHistorySchema.initialize(App.connection);
@@ -44,7 +46,8 @@ public class FlockUp implements Runnable {
                 statement.execute(insertHistorySql);
 
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println("Failed to apply migration: " + latestUnappliedMigration.get());
+                System.exit(1);
             }
 
             System.out.println("Migration " + latestUnappliedMigration.get() + " applied successfully.");
@@ -55,6 +58,8 @@ public class FlockUp implements Runnable {
     }
 
     private Optional<String> getLatestUnappliedMigration() {
+        assert App.connection != null;
+
         try {
             var migrationsDir = Path.of(SessionConfig.getMigrationsDir());
             var appliedMigrations = new HashSet<String>();
@@ -78,7 +83,8 @@ public class FlockUp implements Runnable {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Failed to get latest unapplied migration: " + e.getMessage());
+            System.exit(1);
         }
         return Optional.empty();
 

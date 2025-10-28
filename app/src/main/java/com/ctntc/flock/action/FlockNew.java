@@ -2,24 +2,30 @@ package com.ctntc.flock.action;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import com.ctntc.flock.SessionConfig;
 
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 @Command(name = "new", description = "Create a new migration.")
 public class FlockNew implements Runnable {
-    private static final String NEW_TEMPLATE = """
+    private static final String NEW_TEMPLATE_UP = """
             --- YOUR UP MIGRATION HERE ---
-
+            """;
+    private static final String NEW_TEMPLATE_DOWN = """
             --- YOUR DOWN MIGRATION HERE ---
             """;
 
     @Parameters(index = "0", description = "The name of the new migration.")
     private String migrationName;
+
+    @Option(names = {"-d", "--down"}, description = "Create a matching down migration script.")
+    private boolean down;
 
     @Override
     public void run() {
@@ -34,19 +40,36 @@ public class FlockNew implements Runnable {
 
     private void writeMigrationFile() {
         var timestamp = generateTimestamp();
-        var fileName = timestamp + "_" + migrationName.replaceAll("\\s+", "_") + ".sql";
+        var sanitizedName = migrationName.replaceAll("\\s+", "_");
         var migrationsDir = SessionConfig.getMigrationsDir();
-        var filePath = migrationsDir + "/" + fileName;
+
+        // Create migrations directory if it doesn't exist
+        var migrationsDirFile = new File(migrationsDir);
+        if (!migrationsDirFile.mkdirs()) {
+            System.err.println("Failed to create migrations directory: " + migrationsDir);
+            return;
+        }
 
         try {
-            var file = new File(filePath);
-            file.getParentFile().mkdirs();
-            try (var writer = new FileWriter(file)) {
-                writer.write(NEW_TEMPLATE);
+            createMigrationFile(timestamp, sanitizedName, migrationsDir, "up", NEW_TEMPLATE_UP);
+
+            if (down) {
+                createMigrationFile(timestamp, sanitizedName, migrationsDir, "down", NEW_TEMPLATE_DOWN);
             }
-            System.out.println("Migration file created at: " + filePath);
+
+            System.out.println("Migration file(s) created in: " + migrationsDir);
         } catch (Exception e) {
             System.err.println("Failed to create migration file: " + e.getMessage());
+        }
+    }
+
+    private void createMigrationFile(String timestamp, String sanitizedName, String migrationsDir,
+                                     String type, String template) throws IOException {
+        var fileName = String.format("%s__%s.%s.sql", timestamp, sanitizedName, type);
+        var filePath = migrationsDir + "/" + fileName;
+
+        try (var writer = new FileWriter(filePath)) {
+            writer.write(template);
         }
     }
 }
