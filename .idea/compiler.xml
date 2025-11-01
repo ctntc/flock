@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <option name="project" value="flock/app" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/scoop/persist/gradle-bin/.gradle/caches/modules-2/files-2.1/info.picocli/picocli-codegen/4.7.7/f348113b55dd42964785265d5b858fe90e9ef8ac/picocli-codegen-4.7.7.jar" />
+          <entry name="$USER_HOME$/scoop/persist/gradle-bin/.gradle/caches/modules-2/files-2.1/info.picocli/picocli/4.7.7/82bcae3dc45ddeb08b4954e2f596772a42219715/picocli-4.7.7.jar" />
+        </processorPath>
+        <module name="flock.app.main" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel target="25" />
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="flock.app" options="-Aproject=flock/app" />
+      <module name="flock.app.main" options="-Aproject=flock/app" />
+      <module name="flock.app.test" options="-Aproject=flock/app" />
+    </option>
+  </component>
+</project>
